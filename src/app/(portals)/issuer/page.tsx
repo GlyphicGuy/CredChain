@@ -1,9 +1,9 @@
 "use client";
 import { motion } from "framer-motion";
-import { FileBadge, ShieldAlert, CheckCircle2, Activity, ShieldCheck, Fingerprint } from "lucide-react";
+import { FileBadge, ShieldAlert, CheckCircle2, Activity, ShieldCheck, Fingerprint, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export default function TrustStudio() {
@@ -13,6 +13,20 @@ export default function TrustStudio() {
       const res = await fetchWithAuth("http://localhost:3002/credentials/records");
       if (!res.ok) throw new Error("Failed to fetch");
       return res.json();
+    }
+  });
+
+  const queryClient = useQueryClient();
+  const deleteMutation = useMutation({
+    mutationFn: async (hash: string) => {
+      const res = await fetchWithAuth(`http://localhost:3002/credentials/${hash}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error("Failed to delete");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["institution-records"] });
     }
   });
 
@@ -97,9 +111,18 @@ export default function TrustStudio() {
                     }`}>
                       {record.status === "VALID" ? "Issued" : "Revoked"}
                     </p>
-                    <p className="text-xs text-muted-foreground block">
-                      {new Date(record.createdAt).toLocaleDateString()}
-                    </p>
+                    <div className="flex items-center justify-end gap-2 mt-1">
+                      <p className="text-xs text-muted-foreground block">
+                        {new Date(record.issueDate || record.createdAt).toLocaleDateString()}
+                      </p>
+                      <button 
+                        onClick={() => deleteMutation.mutate(record.credentialHash)}
+                        className="p-1 hover:bg-destructive/10 text-muted-foreground hover:text-destructive rounded-md transition-colors"
+                        title="Delete Record"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))

@@ -35,7 +35,7 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <Providers>
-            {/* <ThreeBackground /> */}
+            <ThreeBackground />
             <div className="relative z-10 min-h-screen flex flex-col">
               {children}
             </div>

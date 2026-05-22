@@ -27,7 +27,15 @@ export function DevPanel() {
       setRole(null);
     }
     // Hard reload to clear cache and rerun middleware
-    window.location.href = '/';
+    if (newRole && newRole.startsWith('student')) {
+      window.location.href = '/wallet';
+    } else if (newRole === 'institution') {
+      window.location.href = '/issuer';
+    } else if (newRole === 'verifier') {
+      window.location.href = '/verify';
+    } else {
+      window.location.href = '/';
+    }
   };
 
   return (
@@ -51,12 +59,20 @@ export function DevPanel() {
             Institution
           </Button>
           <Button 
-            variant={role === 'student' ? 'default' : 'secondary'} 
+            variant={role === 'student-alice' ? 'default' : 'secondary'} 
             size="sm" 
             className="w-full justify-start rounded-lg"
-            onClick={() => handleSetRole('student')}
+            onClick={() => handleSetRole('student-alice')}
           >
-            Student
+            Student (Alice)
+          </Button>
+          <Button 
+            variant={role === 'student-john' ? 'default' : 'secondary'} 
+            size="sm" 
+            className="w-full justify-start rounded-lg mt-1"
+            onClick={() => handleSetRole('student-john')}
+          >
+            Student (John)
           </Button>
           <Button 
             variant={role === 'verifier' ? 'default' : 'secondary'} 

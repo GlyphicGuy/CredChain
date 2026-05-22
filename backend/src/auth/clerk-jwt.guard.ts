@@ -24,16 +24,19 @@ export class ClerkJwtGuard implements CanActivate {
     // DEVELOPER MODE BYPASS
     const isDevMode = process.env.DEV_MODE === 'true' && process.env.NODE_ENV !== 'production';
     const devRole = request.headers['x-dev-role'];
+    console.log(`[ClerkJwtGuard] isDevMode=${isDevMode}, devRole=${devRole}`);
 
     if (isDevMode && devRole) {
       let email = '';
+      let roleType = devRole;
       if (devRole === 'institution') email = 'stanford@credchain.dev';
-      else if (devRole === 'student') email = 'alice@credchain.dev';
+      else if (devRole === 'student-alice') { email = 'alice@credchain.dev'; roleType = 'student'; }
+      else if (devRole === 'student-john') { email = 'john@credchain.dev'; roleType = 'student'; }
       else if (devRole === 'verifier') email = 'recruiter@credchain.dev';
 
       request['user'] = {
         sub: `dev_${devRole}`,
-        publicMetadata: { role: devRole.charAt(0).toUpperCase() + devRole.slice(1) },
+        publicMetadata: { role: roleType.charAt(0).toUpperCase() + roleType.slice(1) },
         email_addresses: [{ email_address: email }]
       };
       return true;

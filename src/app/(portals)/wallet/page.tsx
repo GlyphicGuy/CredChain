@@ -1,17 +1,32 @@
 "use client";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CredentialCard } from "@/components/shared/CredentialCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Copy, CheckCircle2, QrCode, ScanLine, Loader2 } from "lucide-react";
+import { Copy, CheckCircle2, QrCode, ScanLine, Loader2, UserCircle } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import { useUser } from "@clerk/nextjs";
 
 export default function WalletDashboard() {
+  const { user } = useUser();
   const [selectedCred, setSelectedCred] = useState<any>(null);
   const [copied, setCopied] = useState(false);
+  const [devEmail, setDevEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const match = document.cookie.match(/(^| )dev_role=([^;]+)/);
+      if (match) {
+        if (match[2] === 'student-alice') setDevEmail('alice@credchain.dev');
+        if (match[2] === 'student-john') setDevEmail('john@credchain.dev');
+      }
+    }
+  }, []);
+
+  const displayEmail = devEmail || user?.primaryEmailAddress?.emailAddress || "your account";
 
   const { data: credentials = [], isLoading } = useQuery({
     queryKey: ["student-wallet"],
@@ -38,6 +53,10 @@ export default function WalletDashboard() {
   return (
     <div className="w-full max-w-5xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out px-4 py-8 pb-32 md:pb-8">
       <div className="text-center space-y-4">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-secondary rounded-full text-xs font-mono text-muted-foreground mb-2">
+          <UserCircle className="w-4 h-4" />
+          {displayEmail}
+        </div>
         <h1 className="text-4xl font-medium tracking-tight text-foreground">Digital Wallet</h1>
         <p className="text-muted-foreground font-light text-lg">Your mathematically proven credentials, ready to share.</p>
       </div>

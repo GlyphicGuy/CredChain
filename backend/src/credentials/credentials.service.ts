@@ -115,17 +115,23 @@ export class CredentialsService {
     // Extract primary email address from Clerk user object
     const email = user?.email_addresses?.[0]?.email_address?.toLowerCase() || user?.email?.toLowerCase();
     
+    console.log(`[Wallet Query] Checking wallet for email: ${email}`);
+
     if (!email) {
+      console.log(`[Wallet Query] No email found in user object:`, user);
       return [];
     }
 
-    return this.prisma.credentialRecord.findMany({
+    const records = await this.prisma.credentialRecord.findMany({
       where: { 
         student: { email } 
       },
       include: { institution: true },
       orderBy: { issueDate: 'desc' }
     });
+    
+    console.log(`[Wallet Query] Found ${records.length} records for ${email}`);
+    return records;
   }
 
   async getInstitutionRecords() {
@@ -174,5 +180,30 @@ export class CredentialsService {
       status: record.status === 'ISSUED' ? 'VALID' : record.status,
       record,
     };
+  }
+
+  async getNetworkStats() {
+    const totalProofs = await this.prisma.credentialRecord.count();
+    const activeInstitutions = await this.prisma.institution.count({ where: { isActive: true } });
+    
+    return {
+      proofsAnchored: totalProofs,
+      activeInstitutions,
+      uptime: "99.99%"
+    };
+  }
+
+  async deleteCredential(hash: string) {
+    // Clean up related verification logs first due to FK constraints
+    await this.prisma.verificationLog.deleteMany({
+      where: { credentialHash: hash }
+    });
+
+    // Hard delete the credential
+    const deleted = await this.prisma.credentialRecord.delete({
+      where: { credentialHash: hash }
+    });
+
+    return deleted;
   }
 }

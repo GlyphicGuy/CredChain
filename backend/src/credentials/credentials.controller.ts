@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Req } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Req, Delete } from '@nestjs/common';
 import { CredentialsService } from './credentials.service';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { IssueCredentialDto, RevokeCredentialDto, VerifyCredentialDto } from './dto/credential.dto';
@@ -43,5 +43,19 @@ export class CredentialsController {
   @ApiOperation({ summary: 'Verify a credential by ID/hash' })
   async verifyCredential(@Param('id') id: string) {
     return this.credentialsService.verifyCredential(id);
+  }
+
+  @Get('network-stats')
+  @Public()
+  @ApiOperation({ summary: 'Get global network statistics for landing page' })
+  async getNetworkStats() {
+    return this.credentialsService.getNetworkStats();
+  }
+
+  @Delete(':hash')
+  @Roles('Institution')
+  @ApiOperation({ summary: 'Hard delete a credential record' })
+  async deleteCredential(@Param('hash') hash: string) {
+    return this.credentialsService.deleteCredential(hash);
   }
 }
