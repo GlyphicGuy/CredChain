@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { BlockchainService } from '../blockchain/blockchain.service';
 import { ethers } from 'ethers';
@@ -13,7 +13,17 @@ export class CredentialsService {
   async issueCredential(data: any) {
     try {
       const institution = await this.prisma.institution.findFirst();
-      const student = await this.prisma.student.findFirst();
+      
+      // Upsert student based on the provided studentEmail
+      const email = data.studentEmail?.toLowerCase() || 'unknown@example.com';
+      const student = await this.prisma.student.upsert({
+        where: { email },
+        update: {},
+        create: {
+          name: data.recipientName || 'Unknown Student',
+          email: email
+        }
+      });
       
       if (!institution) {
           throw new Error('No institution configured in DB.');
@@ -93,15 +103,28 @@ export class CredentialsService {
       return record;
     } catch (error) {
       console.error(error);
+      const errorMessage = String(error.message || error.reason || error.shortMessage || '');
+      if (errorMessage.includes('already exists')) {
+        throw new BadRequestException('This credential document has already been issued.');
+      }
       throw new InternalServerErrorException('Failed to issue credential');
     }
   }
 
-  async getWalletCredentials() {
-    // For Sprint 4, we just fetch all credentials for the seeded student
+  async getWalletCredentials(user: any) {
+    // Extract primary email address from Clerk user object
+    const email = user?.email_addresses?.[0]?.email_address?.toLowerCase() || user?.email?.toLowerCase();
+    
+    if (!email) {
+      return [];
+    }
+
     return this.prisma.credentialRecord.findMany({
-      where: { studentId: { not: null } },
-      include: { institution: true }
+      where: { 
+        student: { email } 
+      },
+      include: { institution: true },
+      orderBy: { issueDate: 'desc' }
     });
   }
 

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ShieldCheck, Network, CheckCircle2, QrCode, Building2, GraduationCap } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 // Helper function to hash file locally
 async function hashFile(file: File): Promise<string> {
@@ -21,6 +22,7 @@ export default function IssueStudio() {
   const queryClient = useQueryClient();
   const [isSuccess, setIsSuccess] = useState(false);
   const [recipientName, setRecipientName] = useState("");
+  const [studentEmail, setStudentEmail] = useState("");
   const [credentialType, setCredentialType] = useState("");
   const [documentHash, setDocumentHash] = useState<string | null>(null);
 
@@ -31,29 +33,39 @@ export default function IssueStudio() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           recipientName,
+          studentEmail,
           credentialTitle: credentialType,
           documentHash,
         })
       });
-      if (!response.ok) throw new Error("Failed to issue");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || "Failed to issue");
+      }
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["institution-records"] });
       setIsSuccess(true);
+      toast.success("Credential Issued", {
+        description: "The proof has been successfully anchored to the blockchain.",
+      });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error(error);
-      setErrorMsg("System unreachable. Please check your connection.");
+      toast.error("Issuance Failed", {
+        description: error.message || "System unreachable. Please check your connection.",
+      });
     }
   });
 
   const handleIssue = () => {
-    if (!recipientName || !credentialType) return;
+    if (!recipientName || !credentialType || !studentEmail) {
+      toast.error("Missing Information", { description: "Please fill out all required fields." });
+      return;
+    }
     issueMutation.mutate();
   };
-
-  const [errorMsg, setErrorMsg] = useState("");
 
   const handleFileSelect = async (file: File | null) => {
     if (file) {
@@ -66,10 +78,10 @@ export default function IssueStudio() {
 
   const resetForm = () => {
     setRecipientName("");
+    setStudentEmail("");
     setCredentialType("");
     setDocumentHash(null);
     setIsSuccess(false);
-    setErrorMsg("");
   };
 
   return (
@@ -103,6 +115,16 @@ export default function IssueStudio() {
                     />
                   </div>
                   <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground ml-1">Student Email</label>
+                    <Input 
+                      type="email"
+                      value={studentEmail}
+                      onChange={(e) => setStudentEmail(e.target.value)}
+                      placeholder="jane@example.com" 
+                      className="bg-secondary/30 border-transparent focus-visible:border-border h-12 rounded-xl text-foreground text-lg shadow-inner" 
+                    />
+                  </div>
+                  <div className="space-y-2">
                     <label className="text-sm font-medium text-muted-foreground ml-1">Credential Title</label>
                     <Input 
                       value={credentialType}
@@ -129,7 +151,7 @@ export default function IssueStudio() {
 
                 <Button 
                   onClick={handleIssue} 
-                  disabled={issueMutation.isPending || !recipientName || !credentialType} 
+                  disabled={issueMutation.isPending || !recipientName || !credentialType || !studentEmail} 
                   className="w-full h-14 bg-foreground text-background hover:bg-foreground/90 rounded-xl text-lg font-medium shadow-soft transition-all duration-300 relative overflow-hidden group"
                 >
                   <AnimatePresence mode="wait">
@@ -146,10 +168,6 @@ export default function IssueStudio() {
                     )}
                   </AnimatePresence>
                 </Button>
-
-                {errorMsg && (
-                  <p className="text-status-invalid text-sm text-center font-medium mt-4">{errorMsg}</p>
-                )}
               </motion.div>
             ) : (
               <motion.div 

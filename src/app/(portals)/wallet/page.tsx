@@ -26,7 +26,8 @@ export default function WalletDashboard() {
       issuer: item.institution?.name,
       date: new Date(item.issueDate || item.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }),
       status: item.status
-    }))
+    })),
+    refetchInterval: 3000
   });
 
   const copyLink = () => {

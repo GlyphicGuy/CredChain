@@ -84,7 +84,9 @@ export function UploadZone({ onFileSelect }: UploadZoneProps) {
               <div>
                 <h4 className="font-medium text-foreground">{file.name}</h4>
                 <p className="text-xs text-muted-foreground">
-                  {(file.size / 1024 / 1024).toFixed(2)} MB
+                  {file.size < 1024 * 1024 
+                    ? `${(file.size / 1024).toFixed(2)} KB`
+                    : `${(file.size / 1024 / 1024).toFixed(2)} MB`}
                 </p>
               </div>
             </div>

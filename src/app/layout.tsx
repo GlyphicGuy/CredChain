@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 
 import { DevPanel } from "@/components/dev/DevPanel";
 import { ThreeBackground } from "@/components/three/ThreeBackground";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -40,6 +41,7 @@ export default function RootLayout({
             </div>
           </Providers>
           <DevPanel />
+          <Toaster richColors position="bottom-right" theme="dark" />
         </body>
       </html>
     </ClerkProvider>

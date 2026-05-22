@@ -12,6 +12,11 @@ export class IssueCredentialDto {
   @IsNotEmpty()
   credentialTitle: string;
 
+  @ApiProperty({ example: 'student@example.com' })
+  @IsString()
+  @IsNotEmpty()
+  studentEmail: string;
+
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()

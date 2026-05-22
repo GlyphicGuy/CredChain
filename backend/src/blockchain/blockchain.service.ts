@@ -32,7 +32,7 @@ export class BlockchainService {
       return receipt.hash;
     } catch (error) {
       console.error('Failed to anchor credential:', error);
-      throw new Error('Blockchain anchor failed');
+      throw error;
     }
   }
 

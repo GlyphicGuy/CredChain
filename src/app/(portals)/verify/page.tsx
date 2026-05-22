@@ -5,8 +5,9 @@ import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadZone } from "@/components/shared/UploadZone";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, ShieldAlert, XCircle, Scan, Fingerprint, LockKeyhole, FileCheck2, Building2 } from "lucide-react";
+import { ShieldCheck, ShieldAlert, XCircle, Scan, Fingerprint, LockKeyhole, FileCheck2, Building2, Download } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
+import { QRCodeSVG } from "qrcode.react";
 
 // Helper function to hash file locally
 async function hashFile(file: File): Promise<string> {
@@ -138,41 +139,63 @@ function VerifyContent() {
                  <h2 className="text-4xl font-medium tracking-tight text-foreground mb-2">Verified Authentic</h2>
                  <p className="text-status-valid text-lg font-light mb-12">Protectedally proven against the trusted system.</p>
                  
-                 <div className="w-full glass-card bg-background/50 rounded-2xl p-8 border border-border/50 text-left space-y-6">
-                   <div className="space-y-1">
-                     <p className="text-xs uppercase tracking-widest font-semibold text-muted-foreground">Recipient</p>
-                     <p className="text-xl font-medium text-foreground">{report?.recipientName || "Loading..."}</p>
-                   </div>
-                   <div className="space-y-1">
-                     <p className="text-xs uppercase tracking-widest font-semibold text-muted-foreground">Credential</p>
-                     <p className="text-xl font-medium text-foreground">{report?.credentialTitle || "Loading..."}</p>
-                   </div>
-                   <div className="pt-4 border-t border-border/50 space-y-1">
-                     <p className="text-xs uppercase tracking-widest font-semibold text-muted-foreground">Authorized Issuer</p>
-                     <div className="flex items-center gap-3">
-                       <div className="w-8 h-8 rounded-lg bg-secondary/50 flex items-center justify-center">
-                         <Building2 className="w-4 h-4 text-muted-foreground" />
-                       </div>
-                       <p className="text-lg font-medium flex items-center gap-2">
-                         {report?.institution?.name || "Loading..."}
-                         <ShieldCheck className="w-4 h-4 text-status-valid" />
-                       </p>
-                     </div>
-                   </div>
-                   <div className="pt-4 border-t border-border/50 space-y-1 flex justify-between items-center">
-                     <div>
-                       <p className="text-xs uppercase tracking-widest font-semibold text-muted-foreground">Issued On</p>
-                       <p className="text-sm font-medium text-foreground">{report?.createdAt ? new Date(report.createdAt).toLocaleDateString() : "Loading..."}</p>
-                     </div>
-                     <div className="px-3 py-1 bg-status-valid/10 border border-status-valid/20 rounded-full text-xs font-semibold text-status-valid uppercase tracking-widest">
-                       Verified Proof
-                     </div>
-                   </div>
-                 </div>
-                 
-                 <Button onClick={resetState} className="mt-12 h-14 px-8 rounded-full bg-foreground text-background hover:bg-foreground/90 font-medium transition-all shadow-soft w-full sm:w-auto">
-                   Scan Another Document
-                 </Button>
+                  <div className="w-full glass-card bg-background/50 rounded-2xl p-8 border border-border/50 text-left space-y-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                      <div className="space-y-6 flex-1">
+                        <div className="space-y-1">
+                          <p className="text-xs uppercase tracking-widest font-semibold text-muted-foreground">Recipient</p>
+                          <p className="text-xl font-medium text-foreground">{report?.recipientName || "Loading..."}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs uppercase tracking-widest font-semibold text-muted-foreground">Credential</p>
+                          <p className="text-xl font-medium text-foreground">{report?.credentialTitle || "Loading..."}</p>
+                        </div>
+                      </div>
+                      
+                      {report?.credentialHash && (
+                        <div className="bg-white p-3 rounded-2xl shadow-md border border-black/5 dark:border-white/10 flex-shrink-0">
+                          <QRCodeSVG 
+                            value={`https://credchain.network/verify?hash=${report.credentialHash}`}
+                            size={100}
+                            level="Q"
+                            includeMargin={false}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="pt-4 border-t border-border/50 space-y-1">
+                      <p className="text-xs uppercase tracking-widest font-semibold text-muted-foreground">Authorized Issuer</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-secondary/50 flex items-center justify-center">
+                          <Building2 className="w-4 h-4 text-muted-foreground" />
+                        </div>
+                        <p className="text-lg font-medium flex items-center gap-2">
+                          {report?.institution?.name || "Loading..."}
+                          <ShieldCheck className="w-4 h-4 text-status-valid" />
+                        </p>
+                      </div>
+                    </div>
+                    <div className="pt-4 border-t border-border/50 space-y-1 flex justify-between items-center">
+                      <div>
+                        <p className="text-xs uppercase tracking-widest font-semibold text-muted-foreground">Issued On</p>
+                        <p className="text-sm font-medium text-foreground">{report?.createdAt ? new Date(report.createdAt).toLocaleDateString() : "Loading..."}</p>
+                      </div>
+                      <div className="px-3 py-1 bg-status-valid/10 border border-status-valid/20 rounded-full text-xs font-semibold text-status-valid uppercase tracking-widest">
+                        Verified Proof
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-4 mt-12 w-full justify-center">
+                    <Button onClick={() => window.print()} variant="outline" className="h-14 px-8 rounded-full font-medium transition-all shadow-sm w-full sm:w-auto">
+                      <Download className="w-4 h-4 mr-2" />
+                      Save Certificate
+                    </Button>
+                    <Button onClick={resetState} className="h-14 px-8 rounded-full bg-foreground text-background hover:bg-foreground/90 font-medium transition-all shadow-soft w-full sm:w-auto">
+                      Scan Another Document
+                    </Button>
+                  </div>
                </div>
             </div>
           </motion.div>

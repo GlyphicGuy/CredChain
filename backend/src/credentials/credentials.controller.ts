@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Req } from '@nestjs/common';
 import { CredentialsService } from './credentials.service';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { IssueCredentialDto, RevokeCredentialDto, VerifyCredentialDto } from './dto/credential.dto';
@@ -20,8 +20,8 @@ export class CredentialsController {
   @Get('wallet')
   @Roles('Student')
   @ApiOperation({ summary: 'Get credentials for student wallet' })
-  async getWalletCredentials() {
-    return this.credentialsService.getWalletCredentials();
+  async getWalletCredentials(@Req() req: any) {
+    return this.credentialsService.getWalletCredentials(req.user);
   }
 
   @Get('records')
