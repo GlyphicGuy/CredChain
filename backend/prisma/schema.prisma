@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Institution {
+  id            String   @id @default(uuid())
+  name          String
+  did           String   @unique
+  walletAddress String   @unique
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  credentials   CredentialRecord[]
+}
+
+model Student {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  walletAddress String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  credentials   CredentialRecord[]
+}
+
+model CredentialRecord {
+  id              String   @id @default(uuid())
+  institutionId   String
+  studentId       String?
+  recipientName   String
+  credentialTitle String
+  ipfsCid         String?
+  credentialHash  String   @unique
+  status          String   @default("ISSUED") // ISSUED, REVOKED
+  txHash          String?
+  issueDate       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  institution     Institution @relation(fields: [institutionId], references: [id])
+  student         Student?    @relation(fields: [studentId], references: [id])
+  verifications   VerificationLog[]
+}
+
+model VerificationLog {
+  id              String   @id @default(uuid())
+  credentialHash  String
+  verifiedBy      String?  
+  statusResult    String   // VALID, INVALID, REVOKED
+  timestamp       DateTime @default(now())
+
+  credential      CredentialRecord @relation(fields: [credentialHash], references: [credentialHash])
+}
