@@ -17,6 +17,20 @@ export class CredentialsController {
     return this.credentialsService.issueCredential(body);
   }
 
+  @Post('issue-demo')
+  @Roles('Student')
+  @ApiOperation({ summary: 'Issue a demo sandbox credential to self' })
+  async issueDemoCredential(@Req() req: any) {
+    return this.credentialsService.issueDemoCredential(req.user);
+  }
+
+  @Post('issue-batch')
+  @Roles('Institution')
+  @ApiOperation({ summary: 'Issue multiple credentials at once from CSV' })
+  async issueBatch(@Body() body: { credentials: IssueCredentialDto[] }) {
+    return this.credentialsService.issueBatch(body.credentials);
+  }
+
   @Get('wallet')
   @Roles('Student')
   @ApiOperation({ summary: 'Get credentials for student wallet' })
@@ -50,6 +64,13 @@ export class CredentialsController {
   @ApiOperation({ summary: 'Get global network statistics for landing page' })
   async getNetworkStats() {
     return this.credentialsService.getNetworkStats();
+  }
+
+  @Get('public/:email')
+  @Public()
+  @ApiOperation({ summary: 'Get public verified credentials for a user profile' })
+  async getPublicProfile(@Param('email') email: string) {
+    return this.credentialsService.getPublicProfile(email);
   }
 
   @Delete(':hash')

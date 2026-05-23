@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-heading: var(--font-newsreader);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -55,18 +55,18 @@
   --card-foreground: oklch(0.1 0 0);
   --popover: oklch(1 0 0 / 0.7);
   --popover-foreground: oklch(0.1 0 0);
-  --primary: oklch(0.3 0.1 260); /* Deep indigo/violet */
-  --primary-foreground: oklch(1 0 0);
+  --primary: oklch(0.45 0.25 264); /* Premium vibrant Indigo (e.g. #4f46e5) */
+  --primary-foreground: oklch(0.99 0 0); /* Pure white text on primary */
   --secondary: oklch(0.96 0 0); /* Subtle gray */
   --secondary-foreground: oklch(0.1 0 0);
   --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.5 0 0); /* Medium gray for secondary text */
+  --muted-foreground: oklch(0.45 0 0); /* Slightly darker medium gray */
   --accent: oklch(0.96 0 0);
   --accent-foreground: oklch(0.1 0 0);
   --destructive: oklch(0.55 0.2 25); /* Linear-style red */
-  --border: oklch(0.92 0 0); /* Very faint borders */
-  --input: oklch(0.92 0 0);
-  --ring: oklch(0.3 0.1 260);
+  --border: oklch(0.88 0 0); /* Darker, more defined borders */
+  --input: oklch(0.88 0 0);
+  --ring: oklch(0.45 0.25 264);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -95,7 +95,7 @@
   --card-foreground: oklch(0.99 0 0);
   --popover: oklch(0.05 0 0 / 0.7);
   --popover-foreground: oklch(0.99 0 0);
-  --primary: oklch(0.99 0 0);
+  --primary: oklch(0.65 0.25 264); /* Electric Indigo */
   --primary-foreground: oklch(0.02 0 0);
   --secondary: oklch(0.1 0 0);
   --secondary-foreground: oklch(0.99 0 0);
@@ -104,9 +104,9 @@
   --accent: oklch(0.1 0 0);
   --accent-foreground: oklch(0.99 0 0);
   --destructive: oklch(0.55 0.2 25);
-  --border: oklch(0.15 0 0);
-  --input: oklch(0.15 0 0);
-  --ring: oklch(0.8 0 0);
+  --border: oklch(0.2 0 0); /* Darker, more defined borders in dark mode */
+  --input: oklch(0.2 0 0);
+  --ring: oklch(0.65 0.25 264);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -136,6 +136,10 @@
   }
   html {
     @apply font-sans;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    @apply tracking-tighter text-foreground;
   }
   
   /* Remove default scrollbar for a cleaner look */
@@ -177,5 +181,14 @@
   }
   .dark .shadow-soft {
     box-shadow: 0 4px 24px -6px rgba(0,0,0,0.4), 0 2px 8px -2px rgba(0,0,0,0.2);
+  }
+  
+  @keyframes marquee {
+    from { transform: translateX(0%); }
+    to { transform: translateX(-50%); }
+  }
+  .animate-css-marquee {
+    animation: marquee 30s linear infinite;
+    will-change: transform;
   }
 }

@@ -111,6 +111,46 @@ export class CredentialsService {
     }
   }
 
+  async issueDemoCredential(user: any) {
+    const email = user?.email_addresses?.[0]?.email_address?.toLowerCase() || user?.email?.toLowerCase();
+    if (!email) throw new BadRequestException('No email found to issue demo credential');
+
+    // Create a deterministic hash based on email so they don't spam it infinitely
+    const documentHash = ethers.keccak256(ethers.toUtf8Bytes(`demo_cred_${email}`));
+
+    // Check if they already have one
+    const existing = await this.prisma.credentialRecord.findFirst({
+      where: { credentialHash: documentHash }
+    });
+
+    if (existing) {
+      throw new BadRequestException('Demo credential already issued.');
+    }
+
+    return this.issueCredential({
+      recipientName: user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'Demo Student',
+      studentEmail: email,
+      credentialTitle: 'CredChain Genesis Explorer',
+      documentHash: documentHash
+    });
+  }
+
+  async issueBatch(credentials: any[]) {
+    const results = { successful: 0, failed: 0, errors: [] as string[] };
+    
+    for (const data of credentials) {
+      try {
+        await this.issueCredential(data);
+        results.successful++;
+      } catch (error) {
+        results.failed++;
+        results.errors.push(`Failed for ${data.recipientName || data.studentEmail}: ${error.message}`);
+      }
+    }
+    
+    return results;
+  }
+
   async getWalletCredentials(user: any) {
     // Extract primary email address from Clerk user object
     const email = user?.email_addresses?.[0]?.email_address?.toLowerCase() || user?.email?.toLowerCase();
@@ -191,6 +231,20 @@ export class CredentialsService {
       activeInstitutions,
       uptime: "99.99%"
     };
+  }
+
+  async getPublicProfile(email: string) {
+    const studentEmail = decodeURIComponent(email).toLowerCase();
+    const records = await this.prisma.credentialRecord.findMany({
+      where: { 
+        student: { email: studentEmail },
+        status: 'ISSUED' // Only return active, unrevoked credentials
+      },
+      include: { institution: true, student: true },
+      orderBy: { issueDate: 'desc' }
+    });
+    
+    return records;
   }
 
   async deleteCredential(hash: string) {

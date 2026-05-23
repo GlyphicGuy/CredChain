@@ -6,6 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { BlockchainModule } from './blockchain/blockchain.module';
 import { CredentialsModule } from './credentials/credentials.module';
 import { AuthModule } from './auth/auth.module';
+import { StudentsModule } from './students/students.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { AuthModule } from './auth/auth.module';
     PrismaModule, 
     BlockchainModule, 
     CredentialsModule,
-    AuthModule
+    AuthModule,
+    StudentsModule
   ],
   controllers: [AppController],
   providers: [AppService],

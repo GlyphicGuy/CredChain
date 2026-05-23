@@ -31,7 +31,9 @@ export class ClerkJwtGuard implements CanActivate {
       let roleType = devRole;
       if (devRole === 'institution') email = 'stanford@credchain.dev';
       else if (devRole === 'student-alice') { email = 'alice@credchain.dev'; roleType = 'student'; }
-      else if (devRole === 'student-john') { email = 'john@credchain.dev'; roleType = 'student'; }
+      else if (devRole === 'student-bob') { email = 'bob@credchain.dev'; roleType = 'student'; }
+      else if (devRole === 'student-charlie') { email = 'charlie@credchain.dev'; roleType = 'student'; }
+      else if (devRole === 'student-eve') { email = 'eve@credchain.dev'; roleType = 'student'; }
       else if (devRole === 'verifier') email = 'recruiter@credchain.dev';
 
       request['user'] = {
