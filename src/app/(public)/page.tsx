@@ -3,14 +3,12 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { 
-  ArrowRight, ShieldCheck, Fingerprint, Network, ScanFace, 
-  Building2, Database, CheckCircle, User, Code2, Lock, ChevronRight,
-  Boxes, Server, Layers, Cpu
-} from "lucide-react";
+import { ArrowRight, ShieldCheck, User, Building2, Fingerprint, Network, Layers, Database, Lock, Server, CheckCircle, Code2, ChevronRight, ScanFace, Boxes, Cpu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
 import { SecurityCore } from "@/components/3d/SecurityCore";
+import { MagneticButton } from "@/components/premium/MagneticButton";
+import { InteractiveScanner } from "@/components/premium/InteractiveScanner";
+import { LiveTerminal } from "@/components/premium/LiveTerminal";
 
 function Navbar() {
   return (
@@ -59,11 +57,12 @@ function BentoCard({ title, desc, icon: Icon, children, className, delay = 0 }: 
     >
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       <motion.div 
-        animate={{ y: [0, -5, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay }}
-        className="w-12 h-12 rounded-2xl bg-black/[0.03] flex items-center justify-center relative z-10 shadow-sm"
+        whileHover={{ rotate: 180, scale: 1.1 }}
+        transition={{ duration: 0.6, ease: "backOut" }}
+        className="w-12 h-12 rounded-2xl bg-black/[0.03] flex items-center justify-center relative z-10 shadow-sm overflow-hidden"
       >
-        <Icon className="w-5 h-5 text-foreground" />
+        <motion.div className="absolute inset-0 border-2 border-dashed border-zinc-300 rounded-2xl opacity-0 group-hover:opacity-100 group-hover:animate-[spin_4s_linear_infinite]" />
+        <Icon className="w-5 h-5 text-foreground relative z-10" />
       </motion.div>
       <div className="relative z-10 flex-1">
         <h3 className="text-2xl font-semibold tracking-tight mb-4 text-zinc-950">{title}</h3>
@@ -82,8 +81,10 @@ function PillarCard({ icon: Icon, title, desc, features, link, linkText }: any) 
   return (
     <div className="glass-card p-8 rounded-[2rem] border border-border/50 flex flex-col h-full shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group bg-background/50 backdrop-blur-xl relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-      <div className="w-16 h-16 rounded-2xl bg-foreground/5 flex items-center justify-center mb-6 relative z-10 group-hover:scale-110 transition-transform duration-500">
-        <Icon className="w-8 h-8 text-foreground" />
+      <div className="w-16 h-16 rounded-2xl bg-foreground/5 flex items-center justify-center mb-6 relative z-10 group-hover:scale-110 transition-transform duration-500 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-400/20 to-emerald-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <motion.div className="absolute inset-0 border-2 border-dashed border-green-500/50 rounded-2xl opacity-0 group-hover:opacity-100 group-hover:animate-[spin_8s_linear_infinite]" />
+        <Icon className="w-8 h-8 text-foreground group-hover:text-green-600 transition-colors duration-500 relative z-10" />
       </div>
       <h3 className="text-3xl font-semibold mb-4 relative z-10 tracking-tight">{title}</h3>
       <p className="text-muted-foreground leading-relaxed mb-8 flex-1 relative z-10 font-light">{desc}</p>
@@ -107,69 +108,129 @@ function PillarCard({ icon: Icon, title, desc, features, link, linkText }: any) 
 export default function LandingPage() {
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, -150]);
+  const bgDark = useTransform(scrollYProgress, [0.7, 0.8], ["#ffffff", "#09090b"]);
+  const textLight = useTransform(scrollYProgress, [0.7, 0.8], ["#09090b", "#ffffff"]);
+  const borderDark = useTransform(scrollYProgress, [0.7, 0.8], ["rgba(0,0,0,0.1)", "rgba(255,255,255,0.1)"]);
 
   return (
     <div className="flex flex-col items-center w-full bg-background selection:bg-foreground/10 min-h-screen overflow-hidden">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative w-full min-h-[75vh] pt-24 pb-12 flex px-4 overflow-hidden">
+      {/* Ultra-Premium Hero Section */}
+      <section className="relative w-full min-h-[90vh] flex items-center justify-center px-4 md:px-12 lg:px-24 overflow-hidden pt-20 bg-[#fafafa]">
         
-        {/* Apple-grade background fluid gradients & 3D Core */}
-        <div className="absolute inset-0 w-full h-full -z-10 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-blue-300/20 rounded-full blur-[120px] mix-blend-multiply animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-teal-300/20 rounded-full blur-[120px] mix-blend-multiply animate-pulse" style={{ animationDelay: "2s" }} />
-          <SecurityCore />
+        {/* Subtle background glow */}
+        <div className="absolute inset-0 w-full h-full pointer-events-none">
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-slate-200/50 rounded-full blur-[120px] -z-10" />
         </div>
         
-        <div className="container mx-auto max-w-7xl flex flex-col lg:flex-row items-center justify-between w-full z-10 gap-12 relative">
+        <div className="w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-8 items-center relative z-10">
+          
           <motion.div
-            initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col items-center lg:items-start text-center lg:text-left max-w-2xl flex-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+            className="flex flex-col items-start text-left pt-12 lg:pt-0"
           >
+            <div className="overflow-hidden mb-2 relative">
+              <motion.h1 
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+                className="text-[4.5rem] md:text-[6.5rem] lg:text-[7.5rem] font-sans font-bold tracking-tighter text-zinc-950 leading-[0.9] relative inline-block"
+              >
+                CredChain
+              </motion.h1>
+            </div>
+            <div className="overflow-hidden mb-10 pt-2">
+              <motion.h1 
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+                className="text-[2.5rem] md:text-[4rem] lg:text-[4.5rem] font-sans font-semibold tracking-tight text-zinc-800 leading-[1.1]"
+              >
+                Issue Once.<br />
+                <span className="relative inline-block mt-2">
+                  <span className="relative z-10 text-zinc-950">Verify Forever.</span>
+                  
+                  {/* Hand-drawn SVG Underline Animation - Double Scribble */}
+                  <motion.svg 
+                    className="absolute -bottom-4 left-[-5%] w-[110%] h-6 text-green-500 drop-shadow-sm overflow-visible" 
+                    viewBox="0 0 100 20" 
+                    preserveAspectRatio="none"
+                  >
+                    <motion.path 
+                      d="M2,15 Q30,5 50,15 T98,10" 
+                      fill="transparent" 
+                      stroke="currentColor" 
+                      strokeWidth="4" 
+                      strokeLinecap="round"
+                      initial={{ pathLength: 0, opacity: 0 }}
+                      animate={{ pathLength: 1, opacity: 1 }}
+                      transition={{ duration: 1, delay: 1.2, ease: "easeInOut" }}
+                    />
+                    <motion.path 
+                      d="M5,18 Q40,12 60,18 T95,14" 
+                      fill="transparent" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round"
+                      className="text-green-400"
+                      initial={{ pathLength: 0, opacity: 0 }}
+                      animate={{ pathLength: 1, opacity: 0.8 }}
+                      transition={{ duration: 1, delay: 1.4, ease: "easeInOut" }}
+                    />
+                  </motion.svg>
+                </span>
+              </motion.h1>
+            </div>
             
-            <h1 className="text-6xl md:text-[8rem] font-semibold tracking-tighter text-zinc-950 mb-8 leading-[1]">
-              Trust, <br className="hidden md:block" />
-              proven.
-            </h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-xl md:text-2xl text-zinc-600 mb-12 max-w-lg leading-relaxed font-medium"
+            >
+              Turning credentials from editable documents into <span className="relative inline-block font-semibold text-zinc-900 mx-1">
+                trusted digital assets
+                <motion.span 
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 0.6, delay: 1.6, ease: "easeOut" }}
+                  className="absolute bottom-0 left-0 h-[3px] bg-green-500 rounded-full"
+                />
+              </span> using cryptographic proofs.
+            </motion.p>
             
-            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-xl leading-relaxed font-medium">
-              Automate credential issuance and background checks in milliseconds with immutable, cryptographic infrastructure.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 w-full lg:justify-start justify-center items-center">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="flex flex-col sm:flex-row gap-4 w-full justify-start items-center"
+            >
               <Link href="/issuer">
-                <Button size="lg" className="w-full sm:w-auto text-lg px-8 h-14 bg-foreground text-background hover:bg-foreground/90 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                <Button className="h-14 px-8 bg-black hover:bg-zinc-800 text-white rounded-full text-base font-medium shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
                   Issue Credentials <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
               <Link href="/wallet">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg px-8 h-14 border-border/50 hover:bg-secondary text-foreground rounded-full bg-background/50 backdrop-blur-md transition-all duration-300">
+                <Button variant="outline" className="h-14 px-8 border-zinc-200 hover:bg-zinc-100 text-zinc-900 rounded-full text-base font-medium transition-all duration-300 bg-white">
                   Open Student Wallet
                 </Button>
               </Link>
-            </div>
+            </motion.div>
           </motion.div>
 
+          {/* Right side interactive scanner */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, rotateY: 15 }}
-            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-            transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="flex-1 w-full justify-center lg:justify-end relative hidden md:flex"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1.2, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full hidden md:flex items-center justify-center pt-10"
           >
-            <div className="relative w-full max-w-[500px] aspect-square rounded-[3rem] overflow-hidden bg-gradient-to-tr from-black/[0.02] to-transparent border border-black/[0.05] shadow-2xl backdrop-blur-xl group">
-              <Image 
-                src="/images/hero_blockchain.png" 
-                alt="CredChain Digital Credential Blockchain" 
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-1000 mix-blend-darken"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/5" />
-            </div>
+            <InteractiveScanner />
           </motion.div>
+
         </div>
       </section>
 
@@ -259,8 +320,23 @@ export default function LandingPage() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-            {/* Connecting line for desktop */}
-            <div className="hidden md:block absolute top-12 left-[10%] right-[10%] h-0.5 bg-gradient-to-r from-transparent via-border to-transparent -z-10" />
+            {/* Connecting line for desktop with drawing animation */}
+            <div className="hidden md:block absolute top-12 left-[10%] right-[10%] h-[2px] -z-10">
+               <motion.svg className="w-full h-full overflow-visible" preserveAspectRatio="none">
+                 <motion.line 
+                   x1="0" y1="0" x2="100%" y2="0" 
+                   stroke="rgba(0,0,0,0.1)" strokeWidth="2" strokeDasharray="8 8"
+                 />
+                 <motion.line 
+                   x1="0" y1="0" x2="100%" y2="0" 
+                   stroke="#22c55e" strokeWidth="2"
+                   initial={{ pathLength: 0, opacity: 0 }}
+                   whileInView={{ pathLength: 1, opacity: 1 }}
+                   viewport={{ once: true }}
+                   transition={{ duration: 1.5, ease: "easeInOut", delay: 0.5 }}
+                 />
+               </motion.svg>
+            </div>
 
             {[
               {
@@ -389,7 +465,15 @@ export default function LandingPage() {
       </section>
 
       {/* Architecture Showcase */}
-      <section id="architecture" className="w-full py-40 px-4 bg-background overflow-hidden relative z-10">
+      <motion.section 
+        id="architecture" 
+        style={{ backgroundColor: bgDark, color: textLight }}
+        className="w-full py-40 px-4 overflow-hidden relative z-10 transition-colors duration-0"
+      >
+        <div className="absolute inset-0 z-0 opacity-40 pointer-events-none flex items-center justify-center -translate-y-20">
+          <SecurityCore />
+        </div>
+
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-20">
             <motion.div 
@@ -399,19 +483,19 @@ export default function LandingPage() {
               transition={{ duration: 0.8 }}
               className="flex-1 space-y-8"
             >
-              <div className="inline-flex items-center justify-center p-4 bg-secondary/50 rounded-3xl mb-2">
-                <Lock className="w-10 h-10 text-foreground" />
-              </div>
+              <motion.div style={{ borderColor: borderDark }} className="inline-flex items-center justify-center p-4 rounded-3xl mb-2 border backdrop-blur-md bg-white/5 dark:bg-black/5">
+                <Lock className="w-10 h-10" />
+              </motion.div>
               <h2 className="text-5xl md:text-6xl font-semibold tracking-tight leading-[1.1]">
                 Security that feels <br />
-                <span className="text-muted-foreground">invisible.</span>
+                <span className="opacity-50">invisible.</span>
               </h2>
-              <p className="text-xl text-muted-foreground font-light leading-relaxed max-w-md">
+              <p className="text-xl opacity-70 font-light leading-relaxed max-w-md">
                 We've abstracted away the complexity. Metadata is pinned to IPFS, whilst an SHA-256 footprint is anchored to the EVM blockchain. No private keys to manage. Just pure trust.
               </p>
-              <div className="flex gap-4">
+              <div className="flex gap-4 pt-4">
                 <Link href="/issuer">
-                  <Button className="rounded-full h-14 px-8 bg-foreground text-background text-lg shadow-lg">
+                  <Button className="rounded-full h-14 px-8 bg-green-500 text-black hover:bg-green-400 text-lg shadow-[0_0_20px_rgba(34,197,94,0.3)]">
                     Access Dashboard
                   </Button>
                 </Link>
@@ -421,41 +505,17 @@ export default function LandingPage() {
             <div className="flex-1 w-full max-w-lg relative">
               <motion.div 
                 style={{ y }}
-                className="glass-card p-10 rounded-[3rem] relative z-10 shadow-2xl border border-border/50 bg-background/80 backdrop-blur-3xl"
+                className="relative z-10"
               >
-                <div className="space-y-8">
-                  <div className="flex items-center justify-between border-b border-border/50 pb-6">
-                    <div>
-                      <h4 className="font-semibold text-xl text-foreground">Verified Origin</h4>
-                      <p className="text-sm text-muted-foreground">Smart Contract Validation</p>
-                    </div>
-                    <div className="w-12 h-12 rounded-full bg-status-valid/10 border border-status-valid/20 flex items-center justify-center">
-                      <ShieldCheck className="w-6 h-6 text-status-valid" />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div className="h-2.5 w-3/4 bg-secondary rounded-full" />
-                    <div className="h-2.5 w-1/2 bg-secondary rounded-full" />
-                    <div className="h-2.5 w-5/6 bg-secondary rounded-full" />
-                  </div>
-                  
-                  <div className="pt-6 flex items-center gap-4 border-t border-border/50">
-                    <div className="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center">
-                      <Database className="w-5 h-5 text-foreground animate-pulse" />
-                    </div>
-                    <div className="text-sm font-mono text-muted-foreground tracking-widest uppercase">
-                      IPFS CID: QmYwAPJ...
-                    </div>
-                  </div>
-                </div>
+                <LiveTerminal />
               </motion.div>
               
-              <div className="absolute top-10 -right-10 w-full h-full bg-gradient-to-br from-indigo-50 to-teal-50 rounded-[4rem] -z-10" />
+              {/* Decorative background glow behind terminal */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-green-500/10 blur-[100px] -z-10 pointer-events-none rounded-full" />
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Final CTA */}
       <section className="w-full py-40 px-4 relative z-10 overflow-hidden bg-zinc-950">

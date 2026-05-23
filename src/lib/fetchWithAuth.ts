@@ -10,5 +10,11 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
     ...(devRole && process.env.NEXT_PUBLIC_DEV_MODE === 'true' ? { 'X-DEV-ROLE': devRole } : {})
   };
 
-  return fetch(url, { ...options, headers });
+  // Replace localhost with dynamic hostname to fix Safari/mobile TypeError issues
+  let finalUrl = url;
+  if (typeof window !== 'undefined' && finalUrl.includes('localhost')) {
+    finalUrl = finalUrl.replace('localhost', window.location.hostname);
+  }
+
+  return fetch(finalUrl, { ...options, headers });
 }

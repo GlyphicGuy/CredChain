@@ -17,7 +17,8 @@ export default function PublicProfile() {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const res = await fetch(`http://localhost:3002/credentials/public/${encodeURIComponent(email)}`);
+        const baseUrl = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+        const res = await fetch(`http://${baseUrl}:3002/credentials/public/${encodeURIComponent(email)}`);
         if (res.ok) {
           const data = await res.json();
           const formatted = data.map((item: any) => ({

@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CredChain
 
-## Getting Started
+CredChain is a decentralized platform for issuing and verifying digital credentials using cryptographic proofs anchored to a blockchain. By abstracting away the complexity of managing private keys and on-chain interactions, CredChain provides a seamless "Zero-Knowledge" experience for students, institutions, and verifiers.
 
-First, run the development server:
+## Features
 
+- **Issuer Studio**: Institutions can batch issue credentials via CSV or manual entry.
+- **Student Wallet**: Students can view all their cryptographically proven certificates.
+- **Verification Portal**: Third parties can instantly verify the authenticity of a credential using a SHA-256 footprint and Smart Contract validation.
+- **Ultra-Premium UI**: Fully responsive, physically modeled interface with 3D WebGL elements and smooth Framer Motion animations.
+
+## Repository Structure
+
+CredChain is built as a monorepo consisting of:
+- `src/` - The Next.js 15 frontend application (App Router, Tailwind CSS, Shadcn UI, React Three Fiber).
+- `backend/` - The NestJS API that orchestrates the Clerk authentication, IPFS uploads, and smart contract transactions.
+- `contracts/` - The Hardhat environment containing the Solidity smart contracts.
+
+## How to Fork and Run Locally
+
+### 1. Fork and Clone
+Fork the repository on GitHub, then clone it to your local machine:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/YOUR_USERNAME/credchain.git
+cd credchain
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
+You will need to install dependencies for the root frontend, the backend, and the smart contracts:
+```bash
+# Install frontend dependencies
+npm install
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Install backend dependencies
+cd backend
+npm install
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Install smart contract dependencies
+cd ../contracts
+npm install
+```
 
-## Learn More
+### 3. Environment Variables
+To prevent sharing private data, we use `.env` files which are safely ignored by git.
+You must create two `.env` files based on `.env.example`:
 
-To learn more about Next.js, take a look at the following resources:
+**Frontend (`.env.local` in root):**
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Backend (`backend/.env`):**
+```env
+DATABASE_URL="file:./prisma/dev.db"
+PINATA_API_KEY=your_pinata_api_key
+PINATA_SECRET_KEY=your_pinata_secret_key
+WEB3_PROVIDER_URL=your_infura_or_alchemy_url
+PRIVATE_KEY=your_wallet_private_key
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 4. Database Setup
+Inside the `backend` folder, run Prisma to set up your local SQLite database:
+```bash
+cd backend
+npx prisma generate
+npx prisma db push
+```
 
-## Deploy on Vercel
+### 5. Running the Application
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+You need to run both the frontend and backend servers simultaneously. Open two terminal windows.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Terminal 1 (Frontend):**
+```bash
+npm run dev
+```
+*Runs the Next.js app on `http://localhost:3000`*
+
+**Terminal 2 (Backend):**
+```bash
+cd backend
+npm run start:dev
+```
+*Runs the NestJS API on `http://localhost:3002`*
+
+### Privacy & Security
+All sensitive information, such as `dev.db`, API keys, and environment variables, are strictly ignored in `.gitignore`. **Never commit your `.env` files to GitHub.**
+
+## License
+MIT

@@ -19,6 +19,20 @@ export function CredentialCard({ title, issuer, date, status }: CredentialCardPr
       {/* Noise Texture Overlay */}
       <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03] mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
 
+      {/* Verification Stamp Watermark */}
+      {isOk && (
+        <div className="absolute top-1/2 right-4 -translate-y-1/2 opacity-[0.04] dark:opacity-[0.08] pointer-events-none rotate-[-15deg] mix-blend-multiply dark:mix-blend-screen z-0 scale-150 origin-right">
+          <div className="w-48 h-48 rounded-full border-[8px] border-status-valid flex items-center justify-center relative">
+            <div className="absolute inset-2 border-[4px] border-dotted border-status-valid rounded-full" />
+            <div className="flex flex-col items-center text-status-valid font-black">
+              <ShieldCheck className="w-12 h-12 mb-2" />
+              <span className="text-sm uppercase tracking-[0.3em] leading-none mb-1">CredChain</span>
+              <span className="text-2xl uppercase tracking-widest leading-none">Certified</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="h-full flex flex-col justify-between relative z-10">
         {/* Header */}
         <div className="flex justify-between items-start">

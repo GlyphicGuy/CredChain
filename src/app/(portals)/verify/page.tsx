@@ -131,6 +131,23 @@ function VerifyContent() {
                <div className="absolute -top-32 -left-32 w-64 h-64 bg-status-valid/20 rounded-full blur-[80px]" />
                <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-status-valid/10 rounded-full blur-[80px]" />
 
+               {/* Digital Certified Stamp */}
+               <motion.div 
+                 initial={{ scale: 2, opacity: 0, rotate: -30 }}
+                 animate={{ scale: 1, opacity: 0.9, rotate: 12 }}
+                 transition={{ type: "spring", stiffness: 150, damping: 15, delay: 0.4 }}
+                 className="absolute top-8 right-8 md:top-12 md:right-12 pointer-events-none z-20"
+               >
+                 <div className="w-36 h-36 rounded-full border-[6px] border-status-valid/80 flex items-center justify-center relative shadow-[0_0_40px_rgba(16,185,129,0.3)] bg-white/80 dark:bg-black/80 backdrop-blur-md">
+                   <div className="absolute inset-1 border-[3px] border-dotted border-status-valid/60 rounded-full animate-[spin_20s_linear_infinite]" />
+                   <div className="absolute inset-0 flex items-center justify-center flex-col text-status-valid font-black">
+                     <ShieldCheck className="w-8 h-8 mb-1 opacity-90" />
+                     <span className="text-[10px] uppercase tracking-[0.2em] opacity-90 leading-none mb-1">CredChain</span>
+                     <span className="text-[16px] uppercase tracking-wider leading-none">Certified</span>
+                   </div>
+                 </div>
+               </motion.div>
+
                <div className="relative z-10 flex flex-col items-center">
                  <div className="w-24 h-24 bg-status-valid/10 rounded-3xl flex items-center justify-center mb-6 border border-status-valid/30 text-status-valid ring-8 ring-status-valid/5">
                    <FileCheck2 className="w-12 h-12" />

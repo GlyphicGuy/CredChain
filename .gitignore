@@ -51,3 +51,5 @@ contracts/coverage/
 
 # clerk configuration (can include secrets)
 .clerk/
+*.db
+*.sqlite
